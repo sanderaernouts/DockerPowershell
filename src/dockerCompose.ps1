@@ -1,0 +1,21 @@
+Set-StrictMode -Version Latest
+
+# Load common code
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+. "$here\common.ps1"
+
+function Invoke-DockerComposeCommand ($Command, $Arguments) {
+    Invoke-Executable("docker-compose", $Arguments + " " + $Command)
+}
+
+function Invoke-DockerComposeUp ($Arguments) {
+    Invoke-DockerComposeCommand -Command "up" -Arguments $Arguments
+}
+
+function Invoke-DockerComposeDown ($Arguments) {
+    Invoke-DockerComposeCommand -Command "down" -Arguments $Arguments
+}
+
+function Invoke-DockerComposeKill ($Arguments) {
+    Invoke-DockerComposeCommand -Command "down" -Arguments $Arguments
+}
