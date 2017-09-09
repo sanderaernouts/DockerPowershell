@@ -1,5 +1,4 @@
 Set-StrictMode -Version Latest
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Invoke-Executable ($Executable, $Arguments, [switch]$WhatIf) {
     $expression = "$Executable $Arguments"

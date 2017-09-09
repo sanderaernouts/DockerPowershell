@@ -16,7 +16,7 @@ function Invoke-DockerInspect($Arguments, [switch]$WhatIf) {
     Invoke-DockerCommand -Command "inspect" -Arguments $Arguments -WhatIf:$WhatIf
 }
 
-function Get-ContainerId([system.array]$Filters, $Top, [switch]$WhatIf) {
+function Get-ContainerId([Array]$Filters, $Top, [switch]$WhatIf) {
     $filterArguments = "";
 
     foreach($filter in $Filters) {
