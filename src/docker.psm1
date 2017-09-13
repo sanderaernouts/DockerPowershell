@@ -41,7 +41,7 @@ function Get-ContainerIp([string]$ContainerId, [switch]$WhatIf) {
 }
 
 function Wait-Container($ContainerId, [switch]$WhatIf) {
-    while((docker  inspect --format="{{.State.Running}}" $ContainerId) -eq $true) {}
+    return docker  wait $ContainerId
 }
 
 Export-ModuleMember -Alias * -Function Invoke-DockerCommand, Invoke-DockerPs, Invoke-DockerInspect, Get-ContainerIp, Wait-Container
