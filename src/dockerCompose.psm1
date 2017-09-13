@@ -4,20 +4,83 @@ Set-StrictMode -Version Latest
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$here\common.ps1"
 
-function Invoke-DockerComposeCommand ($Command, $Arguments) {
-    Invoke-Executable("docker-compose", $Arguments + " " + $Command)
+$Script:ComposeFiles = New-Object System.Collections.ArrayList;
+$Script:ProjectId = $null;
+
+function _generateProjectId {
+    $id = [guid]::NewGuid().ToString().Replace('-', '')
+    Write-Output "dockercompose$($id)"
 }
 
-function Invoke-DockerComposeUp ($Arguments) {
-    Invoke-DockerComposeCommand -Command "up" -Arguments $Arguments
+function Get-DockerComposeFiles {
+    for ($i = 0; $i -lt $Script:ComposeFiles.Count; $i++) 
+    { 
+        Write-Output $Script:ComposeFiles[$i]
+    }
 }
 
-function Invoke-DockerComposeDown ($Arguments) {
-    Invoke-DockerComposeCommand -Command "down" -Arguments $Arguments
+function Add-DockerComposeFile($Path) {
+    $Script:ComposeFiles.Add($Path) | Out-Null
+    Get-DockerComposeFiles
 }
 
-function Invoke-DockerComposeKill ($Arguments) {
-    Invoke-DockerComposeCommand -Command "kill" -Arguments $Arguments
+function Remove-DockerComposeFile ($Path) {
+    if(-not $Path) {
+        Clear-DockerComposeFiles
+    }else{
+        $Script:ComposeFiles.Remove($Path)
+    }
+
+    Get-DockerComposeFiles
 }
 
-Export-ModuleMember -Alias * -Function Invoke-DockerComposeCommand, Invoke-DockerComposeCommand, Invoke-DockerComposeDown, Invoke-DockerComposeKill
+function Clear-DockerComposeFiles {
+    $Script:ComposeFiles = New-Object System.Collections.ArrayList
+    Get-DockerComposeFiles
+}
+
+function Get-DockerComposeProjectId {
+    Write-Output $Script:ProjectId
+}
+
+function Set-DockerComposeProjectId($Id) {
+    if(-not $Id) {
+        $Script:ProjectId = _generateProjectId
+    }else{
+        $Script:ProjectId = $Id
+    }
+
+    Write-Output $Script:ProjectId
+}
+
+function Clear-DockerComposeProjectId {
+    $Script:ProjectId = $null
+}
+
+function Invoke-DockerComposeCommand ([string]$Command, [string]$Arguments, [switch] $WhatIf) {
+    [string]$options = " ";
+
+    foreach($file in $Script:ComposeFiles) {
+        $options += "-f `"$file`" "
+    }
+
+    if($Script:ProjectId -ne $null) {
+        $options += "-p $($Script:ProjectId) "
+    }
+
+    Invoke-Executable -Executable "docker-compose" -Arguments "$($options.Trim(' ')) $Command $Arguments" -WhatIf:$WhatIf
+}
+
+function Invoke-DockerComposeUp ($Arguments, [switch] $WhatIf) {
+    Invoke-DockerComposeCommand -Command "up" -Arguments $Arguments -WhatIf:$WhatIf
+}
+
+function Invoke-DockerComposeDown ($Arguments, [switch] $WhatIf) {
+    Invoke-DockerComposeCommand -Command "down" -Arguments $Arguments -WhatIf:$WhatIf
+}
+
+function Invoke-DockerComposeKill ($Arguments, [switch] $WhatIf) {
+    Invoke-DockerComposeCommand -Command "kill" -Arguments $Arguments -WhatIf:$WhatIf
+}
+
+Export-ModuleMember -Alias * -Function Invoke-DockerComposeCommand, Invoke-DockerComposeUp, Invoke-DockerComposeDown, Invoke-DockerComposeKill, Get-DockerComposeFiles, Add-DockerComposeFile, Remove-DockerComposeFile, Clear-DockerComposeFiles, Get-DockerComposeProjectId, Set-DockerComposeProjectId, Clear-DockerComposeProjectId
