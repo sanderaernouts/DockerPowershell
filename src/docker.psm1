@@ -33,6 +33,8 @@ function Get-ContainerId([Array]$Filters, $Top, [switch]$WhatIf) {
         $arguments += " -n $Top"
     }
 
+    $arguments += " --all"
+
     Invoke-DockerPs -Arguments $arguments -WhatIf:$WhatIf
 }
 
