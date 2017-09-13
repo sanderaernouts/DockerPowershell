@@ -8,7 +8,7 @@ function Invoke-DockerComposeCommand ($Command, $Arguments) {
     Invoke-Executable("docker-compose", $Arguments + " " + $Command)
 }
 
-function Invoke-DockerComposeCommand ($Arguments) {
+function Invoke-DockerComposeUp ($Arguments) {
     Invoke-DockerComposeCommand -Command "up" -Arguments $Arguments
 }
 
@@ -17,7 +17,7 @@ function Invoke-DockerComposeDown ($Arguments) {
 }
 
 function Invoke-DockerComposeKill ($Arguments) {
-    Invoke-DockerComposeCommand -Command "down" -Arguments $Arguments
+    Invoke-DockerComposeCommand -Command "kill" -Arguments $Arguments
 }
 
 Export-ModuleMember -Alias * -Function Invoke-DockerComposeCommand, Invoke-DockerComposeCommand, Invoke-DockerComposeDown, Invoke-DockerComposeKill
