@@ -44,4 +44,4 @@ function Wait-Container($ContainerId, [switch]$WhatIf) {
     return docker  wait $ContainerId
 }
 
-Export-ModuleMember -Alias * -Function Invoke-DockerCommand, Invoke-DockerPs, Invoke-DockerInspect, Get-ContainerIp, Wait-Container
+Export-ModuleMember -Alias * -Function Invoke-DockerCommand, Invoke-DockerPs, Invoke-DockerInspect, Get-ContainerIp, Get-ContainerId,  Wait-Container
